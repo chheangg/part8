@@ -4,9 +4,8 @@ import { ALL_AUTHORS, CHANGE_AUTHOR_BIRTHDATE } from "../queries"
 import { useState } from "react"
 
 const Authors = (props) => {
-  const [ name, setName ] = useState('')
   const [ born, setBorn ] = useState('')
-
+  const [ name, setName ] = useState('')
   const result = useQuery(ALL_AUTHORS)
   const [ changeAuthorBirthdate ] = useMutation(CHANGE_AUTHOR_BIRTHDATE, {
     refetchQueries: [{ query: ALL_AUTHORS }]
@@ -23,6 +22,7 @@ const Authors = (props) => {
   const authors = result.data.allAuthors
 
   const onSubmit = (event) => {
+    console.log(name)
     event.preventDefault()
     changeAuthorBirthdate({
       variables: {
@@ -57,7 +57,10 @@ const Authors = (props) => {
       <form onSubmit={onSubmit}>
         <h2>Set birthyear</h2>
         <label htmlFor='name'>name</label>
-        <input onChange={({ target }) => setName(target.value)} id='name' name='name' value={name}></input>
+        <select name='name' id='name' onChange={({ target }) => setName(target.value)}>
+          <option value=''>--Please choose an option--</option>
+          {authors.map(author => <option key={author.id} value={author.name}>{author.name}</option>)}
+        </select>
         <br></br>
         <label htmlFor='born'>born</label>
         <input onChange={({ target }) => setBorn(target.value)} id='born' name='born' value={born} type='number'></input>
