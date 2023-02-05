@@ -1,4 +1,5 @@
-const { ApolloServer, gql } = require('apollo-server')
+const { ApolloServer, gql } = require('@apollo/server')
+const { startStandaloneServer } = require('@apollo/server/standalone')
 const { v1: uuid } = require('uuid')
 
 let authors = [
@@ -160,7 +161,6 @@ const resolvers = {
       console.log('hey')
       const author = args.author
       if (!books.includes(author)) {
-        console.log('hey')
         authors = authors.concat({ name: author, id: uuid()})
       }
       const book = { ...args, id: uuid() }
@@ -189,6 +189,6 @@ const server = new ApolloServer({
   resolvers,
 })
 
-server.listen().then(({ url }) => {
-  console.log(`Server ready at ${url}`)
-})
+startStandaloneServer(server, {
+  listen: { port: 4000 },
+}).then(({url}) => console.log(`Server ready at ${url}`))
