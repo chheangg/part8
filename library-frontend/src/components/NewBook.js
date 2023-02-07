@@ -16,6 +16,8 @@ const NewBook = (props) => {
         },
         update: (cache, response) => {
           cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
+            console.log(response.data.addBook)
+            console.log(allBooks)
             return {
               allBooks: allBooks.concat(response.data.addBook)
             }

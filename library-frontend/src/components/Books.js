@@ -7,8 +7,9 @@ const Books = ({ show, genres }) => {
 
   const result = useQuery(ALL_BOOKS, {
     variables: {
-      genre: ''
-    }
+      genre: genre,
+    },
+    fetchPolicy: 'no-cache'
   })
 
   if (!show) {
@@ -20,6 +21,7 @@ const Books = ({ show, genres }) => {
   }
 
   const books = result.data.allBooks
+  console.log(books)
 
   return (
     <div>
@@ -32,7 +34,7 @@ const Books = ({ show, genres }) => {
             <th>author</th>
             <th>published</th>
           </tr>
-          {books.filter(book => genre ? book.genres.includes(genre) : true ).map((a) => (
+          {books.map((a) => (
             <tr key={a.id}>
               <td>{a.title}</td>
               <td>{a.author.name}</td>
@@ -43,7 +45,6 @@ const Books = ({ show, genres }) => {
       </table>
       <div>
         {genres.map(genre => {
-          console.log(genre)
           return genre === 'All' 
                   ? 
                   <button key={genre} onClick={() => setGenre('')}>{genre}</button>
