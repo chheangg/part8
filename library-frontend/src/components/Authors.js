@@ -6,7 +6,9 @@ import { useState } from "react"
 const Authors = (props) => {
   const [ born, setBorn ] = useState('')
   const [ name, setName ] = useState('')
+  
   const result = useQuery(ALL_AUTHORS)
+
   const [ changeAuthorBirthdate ] = useMutation(CHANGE_AUTHOR_BIRTHDATE, {
     refetchQueries: [{ query: ALL_AUTHORS }]
   })
