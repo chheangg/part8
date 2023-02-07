@@ -5,10 +5,11 @@ import NewBook from './components/NewBook'
 import Login from './components/Login'
 import Recommend from './components/Recommend'
 import { useQuery } from '@apollo/client'
-import { USER_DETAIL } from './queries'
+import { USER_DETAIL, ALL_BOOKS } from './queries'
 
 const App = () => {
   const [page, setPage] = useState('authors')
+  const [genres, setGenres] = useState(['All'])
   const [favoriteGenre, setFavoriteGenre] = useState('')
   const [token, setToken] = useState(null);
 
@@ -16,11 +17,24 @@ const App = () => {
     skip: !token
   })
 
+  const bookResult = useQuery(ALL_BOOKS);
+
   useEffect(() => {
     if (userResult.data && token) {
       setFavoriteGenre(userResult.data.me.favoriteGenre)
     }
   }, [userResult.data])
+
+  useEffect(() => {
+    if (bookResult.data) {
+      const fetchedGenres = bookResult.data.allBooks.reduce((prev, curr) => {
+        return prev.concat(curr.genres.filter(genre => !prev.includes(genre)))
+      }, [])
+      console.log(fetchedGenres)
+      const returnedGenres = [...genres, ...fetchedGenres.filter(genre => !genres.includes(genre))]
+      setGenres(returnedGenres)
+    }
+  }, [bookResult.data])
 
   const handleLoginSuccessful = (token) => {
     setToken(token)
@@ -61,7 +75,7 @@ const App = () => {
 
       <Authors show={page === 'authors'} />
 
-      <Books show={page === 'books'} />
+      <Books show={page === 'books'} genres={genres} />
 
       <NewBook show={page === 'add'} />
 
