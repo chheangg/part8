@@ -1,12 +1,26 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Authors from './components/Authors'
 import Books from './components/Books'
 import NewBook from './components/NewBook'
 import Login from './components/Login'
+import Recommend from './components/Recommend'
+import { useQuery } from '@apollo/client'
+import { USER_DETAIL } from './queries'
 
 const App = () => {
   const [page, setPage] = useState('authors')
+  const [favoriteGenre, setFavoriteGenre] = useState('')
   const [token, setToken] = useState(null);
+
+  const userResult = useQuery(USER_DETAIL, {
+    skip: !token
+  })
+
+  useEffect(() => {
+    if (userResult.data && token) {
+      setFavoriteGenre(userResult.data.me.favoriteGenre)
+    }
+  }, [userResult.data])
 
   const handleLoginSuccessful = (token) => {
     setToken(token)
@@ -30,6 +44,13 @@ const App = () => {
           : 
           null 
         }
+        {
+          token
+          ?
+          <button onClick={() => setPage('recommend')}>recommend</button>
+          :
+          null
+        }
         { token 
           ? 
           <button onClick={handleLogout}>logout</button>
@@ -45,6 +66,8 @@ const App = () => {
       <NewBook show={page === 'add'} />
 
       <Login show={page === 'login'} handleLogin={handleLoginSuccessful}/>
+
+      <Recommend favoriteGenre={favoriteGenre} show={page === 'recommend'} />
      
     </div>
   )

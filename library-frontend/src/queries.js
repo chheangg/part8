@@ -12,7 +12,7 @@ export const ALL_AUTHORS = gql`
 `
 
 export const ALL_BOOKS = gql`
-  query findAllBooks($genre: String!) {
+  query findAllBooks($genre: String) {
     allBooks(
       genre: $genre
     ) {
@@ -80,4 +80,12 @@ export const LOGIN = gql`
         value
       }
     }
+`
+
+export const USER_DETAIL = gql`
+query {
+  me {
+    favoriteGenre
+  }
+}
 `
