@@ -1,15 +1,23 @@
-import { ALL_BOOKS } from "../queries"
-import { useQuery } from "@apollo/client"
-import { useState } from "react"
+import { ALL_BOOKS, BOOK_ADDED } from "../queries"
+import { useQuery, useSubscription, useApolloClient } from "@apollo/client"
+import { useEffect, useState } from "react"
+import { updateCache } from "../App"
 
 const Books = ({ show, genres }) => {
   const [genre, setGenre] = useState('')
+  const client = useApolloClient()
 
   const result = useQuery(ALL_BOOKS, {
     variables: {
       genre: genre,
     },
-    fetchPolicy: 'no-cache'
+  })
+
+  useSubscription(BOOK_ADDED, {
+    onData: ({ data }) => {
+      const addedBook = data.data.bookAdded
+      updateCache(client.cache, { query: ALL_BOOKS, variables: { genre: '' }}, addedBook)
+    }
   })
 
   if (!show) {
@@ -21,7 +29,6 @@ const Books = ({ show, genres }) => {
   }
 
   const books = result.data.allBooks
-  console.log(books)
 
   return (
     <div>

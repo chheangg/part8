@@ -5,7 +5,16 @@ import NewBook from './components/NewBook'
 import Login from './components/Login'
 import Recommend from './components/Recommend'
 import { useQuery } from '@apollo/client'
-import { USER_DETAIL, ALL_BOOKS } from './queries'
+import { USER_DETAIL, ALL_BOOKS} from './queries'
+
+export const updateCache = (cache, query, addedBook) => {
+  cache.updateQuery(query, ({ allBooks }) => {
+    const uniqByName = (arrays) => arrays.reduce((previous, current) => previous.find(element => element.id === current.id) ? previous : previous.concat(current), [])
+    return {
+      allBooks: uniqByName(allBooks.concat(addedBook))
+    }
+  })
+}
 
 const App = () => {
   const [page, setPage] = useState('authors')
@@ -30,8 +39,8 @@ const App = () => {
       const fetchedGenres = bookResult.data.allBooks.reduce((prev, curr) => {
         return prev.concat(curr.genres.filter(genre => !prev.includes(genre)))
       }, [])
-      console.log(fetchedGenres)
       const returnedGenres = [...genres, ...fetchedGenres.filter(genre => !genres.includes(genre))]
+      console.log(bookResult)
       setGenres(returnedGenres)
     }
   }, [bookResult.data])
