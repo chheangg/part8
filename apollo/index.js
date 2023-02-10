@@ -85,7 +85,6 @@ const queries = `
 const resolvers = {
   Query: {
     bookCount: async () => {
-      console.log(Book)
       return await Book.collection.countDocuments()
     },
     authorCount: async () => await Author.collection.countDocuments(),
@@ -115,7 +114,7 @@ const resolvers = {
         }).populate('author')
       }
     },
-    allAuthors: async () => await Author.find({}),
+    allAuthors: async () => await Author.find({}).populate('books'),
     me: async (root, args, context) => {
       return context.currentUser
     }
@@ -134,6 +133,8 @@ const resolvers = {
         published: args.published,
         genres: args.genres,
       })
+
+      author.books.push(book)
 
       try {
         await author.save()

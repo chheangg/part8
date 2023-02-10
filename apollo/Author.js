@@ -1,10 +1,9 @@
-const Book = require('./models/Book')
-
 exports.typeDefs = `
   type Author {
     name: String!
     id: ID!
     born: Int
+    books: [Book!]!
     bookCount: Int
   }
 `
@@ -12,6 +11,6 @@ exports.typeDefs = `
 exports.resolvers = {
   Author: {
     id: ({ _id }) => _id,
-    bookCount: async (root) => await Book.find({ author: root.id }).count()
+    bookCount: (root, args) => root.books.length
   },
 }
